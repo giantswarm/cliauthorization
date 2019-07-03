@@ -1,3 +1,3 @@
-[![CircleCI](https://circleci.com/gh/giantswarm/cliauthorization.svg?style=shield)](https://circleci.com/gh/giantswarm/cliauthorization)
+[![CircleCI](https://circleci.com/gh/giantswarm/gscliauth.svg?style=shield)](https://circleci.com/gh/giantswarm/gscliauth)
 
-# cliauthorization
+# gscliauth
