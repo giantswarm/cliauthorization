@@ -6,8 +6,8 @@
   name = "github.com/cenkalti/backoff"
   packages = ["."]
   pruneopts = "NUT"
-  revision = "4b4cebaf850ec58f1bb1fec5bdebdf8501c2bc3f"
-  version = "v3.0.0"
+  revision = "2146c93394225c3732078705043ce9f26584d334"
+  version = "v2.2.0"
 
 [[projects]]
   digest = "1:7a6852b35eb5bbc184561443762d225116ae630c26a7c4d90546619f1e7d2ad2"
