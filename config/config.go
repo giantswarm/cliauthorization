@@ -12,7 +12,7 @@ import (
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
-	"github.com/giantswarm/gsctl/oidc"
+	"github.com/giantswarm/gscliauth/oidc"
 	"github.com/giantswarm/microerror"
 	"github.com/spf13/afero"
 	yaml "gopkg.in/yaml.v2"

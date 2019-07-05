@@ -26,14 +26,6 @@
   version = "v1.7.0"
 
 [[projects]]
-  digest = "1:faca58fb5aa82da04820ce1b07c1a180aa80013e47982a05648b808dd0168d6a"
-  name = "github.com/giantswarm/gsctl"
-  packages = ["oidc"]
-  pruneopts = "NUT"
-  revision = "b9e631e8d7f273271055beab49b574f5b4fcc4bd"
-  version = "0.15.1"
-
-[[projects]]
   branch = "master"
   digest = "1:44ab875c6630c40548718738760744c9e38a3a872e97dbb331d1d142ab503840"
   name = "github.com/giantswarm/microerror"
@@ -169,7 +161,6 @@
     "github.com/cenkalti/backoff",
     "github.com/dgrijalva/jwt-go",
     "github.com/fatih/color",
-    "github.com/giantswarm/gsctl/oidc",
     "github.com/giantswarm/microerror",
     "github.com/gobuffalo/packr",
     "github.com/skratchdot/open-golang/open",

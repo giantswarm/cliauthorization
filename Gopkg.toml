@@ -38,10 +38,6 @@
   version = "1.7.0"
 
 [[constraint]]
-  name = "github.com/giantswarm/gsctl"
-  version = "0.15.1"
-
-[[constraint]]
   branch = "master"
   name = "github.com/giantswarm/microerror"
 
