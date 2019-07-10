@@ -15,9 +15,9 @@ const (
 	jwksURL = "https://giantswarm.eu.auth0.com/.well-known/jwks.json"
 )
 
-// IDToken is our custom representation of the details of a JWT we care about
+// IDToken is our custom representation of the details of a JWT we care about.
 type IDToken struct {
-	// Email claim
+	// Email claim.
 	Email string
 }
 
@@ -43,7 +43,7 @@ func ParseIDToken(tokenString string) (token *IDToken, err error) {
 		return result, nil
 	})
 	if err != nil {
-		// handle some validation errors specifically
+		// handle some validation errors specifically.
 		valErr, valErrOK := err.(*jwt.ValidationError)
 		if valErrOK && valErr.Errors == jwt.ValidationErrorIssuedAt {
 			claims, ok := t.Claims.(jwt.MapClaims)
