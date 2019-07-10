@@ -58,7 +58,10 @@ func RefreshToken(refreshToken string) (refreshResponse RefreshResponse, err err
 		return refreshResponse, microerror.Maskf(refreshError, "Got an unparseable error from Auth0. Possibly the Auth0 service is down. Try again later")
 	}
 
-	json.Unmarshal(body, &refreshResponse)
+	err = json.Unmarshal(body, &refreshResponse)
+	if err != nil {
+		return refreshResponse, microerror.Maskf(refreshError, "Got an unparseable error from Auth0. Possibly the Auth0 service is down. Try again later")
+	}
 
 	// This is a real error from Auth0, in this case we have Error and ErrorDescription
 	// set by what Auth0 sent us.

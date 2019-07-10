@@ -11,11 +11,11 @@ import (
 	"sync"
 	"time"
 
-	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/giantswarm/gscliauth/oidc"
 	"github.com/giantswarm/microerror"
 	"github.com/spf13/afero"
-	yaml "gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v2"
 )
 
 const (
@@ -571,7 +571,10 @@ func Initialize(fs afero.Fs, configDirPath string) error {
 		if err != nil {
 			return microerror.Mask(err)
 		}
-		file.Close()
+		err = file.Close()
+		if err != nil {
+			return microerror.Mask(err)
+		}
 
 		err = fs.Chmod(ConfigFilePath, ConfigFilePermission)
 		if err != nil {
@@ -586,7 +589,10 @@ func Initialize(fs afero.Fs, configDirPath string) error {
 	populateConfigStruct(myConfig)
 
 	CertsDirPath = path.Join(ConfigDirPath, "certs")
-	fs.MkdirAll(CertsDirPath, 0700)
+	err = fs.MkdirAll(CertsDirPath, 0700)
+	if err != nil {
+		return microerror.Mask(err)
+	}
 
 	KubeConfigPaths = getKubeconfigPaths(HomeDirPath)
 

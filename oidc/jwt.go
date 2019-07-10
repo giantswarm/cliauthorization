@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/cenkalti/backoff"
-	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/giantswarm/microerror"
 )
 
@@ -26,7 +26,10 @@ type IDToken struct {
 // for now.
 func ParseIDToken(tokenString string) (token *IDToken, err error) {
 	// Wait a bit of the tokens IAT is ahead of current time.
-	waitIfNeeded(tokenString)
+	err = waitIfNeeded(tokenString)
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
 
 	// Parse takes the token string and a function for looking up the key. The latter is especially
 	// useful if you use multiple keys for your application.  The standard is to use 'kid' in the
@@ -46,6 +49,10 @@ func ParseIDToken(tokenString string) (token *IDToken, err error) {
 		// handle some validation errors specifically.
 		valErr, valErrOK := err.(*jwt.ValidationError)
 		if valErrOK && valErr.Errors == jwt.ValidationErrorIssuedAt {
+			if t == nil {
+				return nil, microerror.Mask(err)
+			}
+
 			claims, ok := t.Claims.(jwt.MapClaims)
 			if !ok {
 				return nil, microerror.Maskf(tokenIssuedAtError, valErr.Error())
