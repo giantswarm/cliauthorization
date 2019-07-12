@@ -43,11 +43,11 @@ func tempConfig(fs afero.Fs, configYAML string) (string, error) {
 	return dir, nil
 }
 
-// TestInitializeEmpty tests the case where a config file and its directory
+// Test_Initialize_Empty tests the case where a config file and its directory
 // do not yet exist.
 // Configuration is created and then serialized to the YAML file.
 // We roughtly check the YAML whether it contains the expected info.
-func TestInitializeEmpty(t *testing.T) {
+func Test_Initialize_Empty(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	dir := tempDir(fs)
 
@@ -153,7 +153,7 @@ func TestInitializeEmpty(t *testing.T) {
 
 // TestInitializeNonEmpty tests initializing with a dummy config file.
 // The config file has one endpoint, which is also the selected one.
-func TestInitializeNonEmpty(t *testing.T) {
+func Test_Initialize_NonEmpty(t *testing.T) {
 	// our test config YAML.
 	yamlText := `last_version_check: 0001-01-01T00:00:00Z
 updated: 2017-09-29T11:23:15+02:00
@@ -207,10 +207,10 @@ selected_endpoint: https://myapi.domain.tld`
 	t.Log(yamlText)
 }
 
-// TestKubeconfigEnvNonexisting tests what happens
+// Test_Kubeconfig_Env_Nonexisting tests what happens
 // when the KUBECONFIG env variable points to the
 // same dir as we use for config, and it's empty.
-func TestKubeconfigEnvNonexisting(t *testing.T) {
+func Test_Kubeconfig_Env_Nonexisting(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	dir := tempDir(fs)
 	os.Setenv("KUBECONFIG", dir)
@@ -220,7 +220,7 @@ func TestKubeconfigEnvNonexisting(t *testing.T) {
 	}
 }
 
-func TestUserAgent(t *testing.T) {
+func Test_UserAgent(t *testing.T) {
 	ua := UserAgent()
 	t.Log(ua)
 }
@@ -238,8 +238,8 @@ var normalizeEndpointTests = []struct {
 	{"http://user:pass@localhost:9000/", "http://localhost:9000"},
 }
 
-// TestNormalizeEndpoint tests the normalizeEndpoint function.
-func TestNormalizeEndpoint(t *testing.T) {
+// Test_Normalize_Endpoint tests the normalizeEndpoint function.
+func Test_Normalize_Endpoint(t *testing.T) {
 	for _, tt := range normalizeEndpointTests {
 		normalized := normalizeEndpoint(tt.in)
 		if normalized != tt.out {
@@ -248,9 +248,9 @@ func TestNormalizeEndpoint(t *testing.T) {
 	}
 }
 
-// TestEndpointAlias tests if endpoints can have aliases
+// Test_Endpoint_Alias tests if endpoints can have aliases
 // and if they can be used for selecting endpoints.
-func TestEndpointAlias(t *testing.T) {
+func Test_Endpoint_Alias(t *testing.T) {
 	// our test config YAML.
 	yamlText := `last_version_check: 0001-01-01T00:00:00Z
 updated: 2017-09-29T11:23:15+02:00
@@ -304,7 +304,7 @@ selected_endpoint: https://other.endpoint`
 
 }
 
-func TestSetProvider(t *testing.T) {
+func Test_Set_Provider(t *testing.T) {
 	var testCases = []struct {
 		configYAML           string
 		expectedErrorMatcher func(error) bool

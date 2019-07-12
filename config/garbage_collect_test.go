@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/afero"
 )
 
-func TestIsCertExpired(t *testing.T) {
+func Test_Is_Cert_Expired(t *testing.T) {
 	// certificate taken from Go docs. It expired 2014-05-29 00:00:00 +0000 UTC.
 	expiredCertPEM := `
 -----BEGIN CERTIFICATE-----
@@ -82,7 +82,7 @@ WGnPiXqCuccNAHWN9e5ULL3WoKfoLdshSyA9aQ44F3nJ
 	}
 }
 
-func TestGarbageCollectKeyPairs(t *testing.T) {
+func Test_GarbageCollect_KeyPairs(t *testing.T) {
 	// temporary config dir.
 	fs := afero.NewMemMapFs()
 	_, tempConfigErr := tempConfig(fs, "")
