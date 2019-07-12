@@ -49,10 +49,6 @@ func ParseIDToken(tokenString string) (token *IDToken, err error) {
 		// handle some validation errors specifically.
 		valErr, valErrOK := err.(*jwt.ValidationError)
 		if valErrOK && valErr.Errors == jwt.ValidationErrorIssuedAt {
-			if t == nil {
-				return nil, microerror.Mask(err)
-			}
-
 			claims, ok := t.Claims.(jwt.MapClaims)
 			if !ok {
 				return nil, microerror.Maskf(tokenIssuedAtError, valErr.Error())
