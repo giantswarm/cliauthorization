@@ -14,7 +14,7 @@ import (
 // token to get a new access token.
 type RefreshResponse struct {
 	AccessToken      string `json:"access_token"`
-	ExpiresIn        string `json:"expires_in"`
+	ExpiresIn        int    `json:"expires_in"`
 	IDToken          string `json:"id_token"`
 	Scope            string `json:"scope"`
 	TokenType        string `json:"token_type"`
