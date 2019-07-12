@@ -323,10 +323,8 @@ func (c *configStruct) ChooseToken(endpoint, overridingToken string) string {
 	}
 
 	endpointConfig := c.EndpointConfig(ep)
-	if endpointConfig != nil {
-		if endpointConfig != nil && endpointConfig.Token != "" {
+	if endpointConfig != nil && endpointConfig.Token != "" {
 			return endpointConfig.Token
-		}
 	}
 
 	return ""
@@ -345,10 +343,8 @@ func (c *configStruct) ChooseScheme(endpoint string, CmdToken string) string {
 	}
 
 	endpointConfig := c.EndpointConfig(ep)
-	if endpointConfig != nil {
-		if endpointConfig != nil && endpointConfig.Scheme != "" {
+	if endpointConfig != nil  && endpointConfig.Scheme != "" {
 			return endpointConfig.Scheme
-		}
 	}
 
 	return "giantswarm"

@@ -20,7 +20,7 @@ func GarbageCollectKeyPairs(fs afero.Fs) error {
 	}
 
 	// find out which certificates in certs folder have expired.
-	expiredCerts := []string{}
+	var expiredCerts []string
 
 	for _, file := range files {
 		name := file.Name()
