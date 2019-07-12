@@ -160,8 +160,8 @@ func getToken(code, codeVerifier string) (pkceResponse PKCEResponse, err error) 
 		pkceResponse.ErrorDescription = "Unable to perform POST request to Auth0."
 		return pkceResponse, microerror.Maskf(authorizationError, pkceResponse.Error)
 	}
-
 	defer res.Body.Close()
+
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		pkceResponse.Error = "unknown error"

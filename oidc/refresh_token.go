@@ -51,8 +51,8 @@ func RefreshToken(refreshToken string) (refreshResponse RefreshResponse, err err
 	if err != nil {
 		return refreshResponse, microerror.Maskf(refreshError, "Unable to perform POST request to Auth0")
 	}
-
 	defer res.Body.Close()
+
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return refreshResponse, microerror.Maskf(refreshError, "Got an unparseable error from Auth0. Possibly the Auth0 service is down. Try again later")
