@@ -131,14 +131,14 @@ func newConfigStruct() *configStruct {
 
 // readFromFile reads configuration from the YAML config file.
 func readFromFile(fs afero.Fs, filePath string) (*configStruct, error) {
-	myConfig := newConfigStruct()
+	config := newConfigStruct()
 
 	doesExist, err := afero.Exists(fs, filePath)
 	if err != nil {
-		return myConfig, microerror.Mask(err)
+		return config, microerror.Mask(err)
 	}
 	if !doesExist {
-		return myConfig, nil
+		return config, nil
 	}
 
 	data, err := afero.ReadFile(fs, filePath)
@@ -146,17 +146,17 @@ func readFromFile(fs afero.Fs, filePath string) (*configStruct, error) {
 		if os.IsNotExist(err) {
 			// ignore if file does not exist,
 			// as this is not an error.
-			return myConfig, nil
+			return config, nil
 		}
-		return myConfig, microerror.Mask(err)
+		return config, microerror.Mask(err)
 	}
 
-	yamlErr := yaml.Unmarshal(data, myConfig)
-	if yamlErr != nil {
-		return myConfig, microerror.Mask(yamlErr)
+	err = yaml.Unmarshal(data, config)
+	if err != nil {
+		return config, microerror.Mask(err)
 	}
 
-	return myConfig, nil
+	return config, nil
 }
 
 // endpointConfig is used to serialize/deserialize endpoint configuration
