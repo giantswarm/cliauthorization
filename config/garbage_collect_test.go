@@ -7,8 +7,8 @@ import (
 	"github.com/spf13/afero"
 )
 
-func TestIsCertExpired(t *testing.T) {
-	// certificate taken from Go docs. It expired 2014-05-29 00:00:00 +0000 UTC
+func Test_Is_Cert_Expired(t *testing.T) {
+	// certificate taken from Go docs. It expired 2014-05-29 00:00:00 +0000 UTC.
 	expiredCertPEM := `
 -----BEGIN CERTIFICATE-----
 MIIDujCCAqKgAwIBAgIIE31FZVaPXTUwDQYJKoZIhvcNAQEFBQAwSTELMAkGA1UE
@@ -82,15 +82,15 @@ WGnPiXqCuccNAHWN9e5ULL3WoKfoLdshSyA9aQ44F3nJ
 	}
 }
 
-func TestGarbageCollectKeyPairs(t *testing.T) {
-	// temporary config dir
+func Test_GarbageCollect_KeyPairs(t *testing.T) {
+	// temporary config dir.
 	fs := afero.NewMemMapFs()
 	_, tempConfigErr := tempConfig(fs, "")
 	if tempConfigErr != nil {
 		t.Error(tempConfigErr)
 	}
 
-	// copy test files over to temporary certs dir
+	// copy test files over to temporary certs dir.
 	basePath := "testdata"
 	testdataFs := afero.NewOsFs()
 	files, _ := afero.ReadDir(testdataFs, basePath)
@@ -116,7 +116,7 @@ func TestGarbageCollectKeyPairs(t *testing.T) {
 	}
 
 	// Check remaining files.
-	// test1 should be removed
+	// test1 should be removed.
 	exists, err := afero.Exists(fs, path.Join(CertsDirPath, "/test1-client.crt"))
 	if err != nil {
 		t.Error(err)
@@ -133,7 +133,7 @@ func TestGarbageCollectKeyPairs(t *testing.T) {
 		t.Error("test1-client.key should have been deleted, is still there")
 	}
 
-	// test2 should still exist
+	// test2 should still exist.
 	exists, err = afero.Exists(fs, path.Join(CertsDirPath, "/test2-client.crt"))
 	if err != nil {
 		t.Error(err)
@@ -158,5 +158,4 @@ func TestGarbageCollectKeyPairs(t *testing.T) {
 	for _, file := range files {
 		t.Log(file.Name())
 	}
-
 }

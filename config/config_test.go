@@ -51,7 +51,7 @@ func Test_Initialize_Empty(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	dir := tempDir(fs)
 
-	// additional non-existing sub directory
+	// additional non-existing sub directory.
 	dir = path.Join(dir, "subdir")
 
 	err := Initialize(fs, dir)
@@ -66,17 +66,17 @@ func Test_Initialize_Empty(t *testing.T) {
 	testToken := "some-token"
 	testAlias := "testalias"
 
-	// check initial enpoint count
+	// check initial endpoint count.
 	if Config.NumEndpoints() != 0 {
 		t.Error("Expected zero endpoints, got", Config.NumEndpoints())
 	}
 
-	// check selected endpoint
+	// check selected endpoint.
 	if Config.SelectedEndpoint != "" {
 		t.Errorf("Expected selected endpoint to be '', got %q", Config.SelectedEndpoint)
 	}
 
-	// directly set some configuration
+	// directly set some configuration.
 	Config.LastVersionCheck = time.Time{}
 	err = Config.StoreEndpointAuth(testEndpointURL, testAlias, "", testEmail, testScheme, testToken, testRefreshToken)
 	if err != nil {
@@ -114,25 +114,25 @@ func Test_Initialize_Empty(t *testing.T) {
 	}
 	yamlText := string(content)
 
-	// check if the last updated date has been added
+	// check if the last updated date has been added.
 	if !strings.Contains(yamlText, "updated:") {
 		t.Log(yamlText)
 		t.Error("Written YAML doesn't contain the expected string 'updated:'")
 	}
 
-	// check if the selected endpoint is set as expected
+	// check if the selected endpoint is set as expected.
 	if !strings.Contains(yamlText, "selected_endpoint: "+testEndpointURL) {
 		t.Log(yamlText)
 		t.Errorf("Written YAML doesn't contain the expected string 'selected_endpoint: %s'", testEndpointURL)
 	}
 
-	// check if the alias has been set
+	// check if the alias has been set.
 	if !strings.Contains(yamlText, "alias: "+testAlias) {
 		t.Log(yamlText)
 		t.Errorf("Written YAML doesn't contain the expected string 'alias: %s'", testAlias)
 	}
 
-	// test what happens after logout
+	// test what happens after logout.
 	Config.Logout(testEndpointURL)
 
 	err = WriteToFile()
@@ -151,10 +151,10 @@ func Test_Initialize_Empty(t *testing.T) {
 	}
 }
 
-// Test_Initialize_NonEmpty tests initializing with a dummy config file.
+// TestInitializeNonEmpty tests initializing with a dummy config file.
 // The config file has one endpoint, which is also the selected one.
 func Test_Initialize_NonEmpty(t *testing.T) {
-	// our test config YAML
+	// our test config YAML.
 	yamlText := `last_version_check: 0001-01-01T00:00:00Z
 updated: 2017-09-29T11:23:15+02:00
 endpoints:
@@ -191,7 +191,7 @@ selected_endpoint: https://myapi.domain.tld`
 		t.Errorf("Expected provider testprovider, got '%s'", Config.Provider)
 	}
 
-	// test what happens after logout
+	// test what happens after logout.
 	Config.Logout("https://myapi.domain.tld")
 
 	content, readErr := afero.ReadFile(fs, ConfigFilePath)
@@ -209,7 +209,7 @@ selected_endpoint: https://myapi.domain.tld`
 
 // Test_Kubeconfig_Env_Nonexisting tests what happens
 // when the KUBECONFIG env variable points to the
-// same dir as we use for config, and it's empty
+// same dir as we use for config, and it's empty.
 func Test_Kubeconfig_Env_Nonexisting(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	dir := tempDir(fs)
@@ -238,8 +238,8 @@ var normalizeEndpointTests = []struct {
 	{"http://user:pass@localhost:9000/", "http://localhost:9000"},
 }
 
-// Test_NormalizeEndpoint tests the normalizeEndpoint function
-func Test_NormalizeEndpoint(t *testing.T) {
+// Test_Normalize_Endpoint tests the normalizeEndpoint function.
+func Test_Normalize_Endpoint(t *testing.T) {
 	for _, tt := range normalizeEndpointTests {
 		normalized := normalizeEndpoint(tt.in)
 		if normalized != tt.out {
@@ -248,10 +248,10 @@ func Test_NormalizeEndpoint(t *testing.T) {
 	}
 }
 
-// TestEndpointAlias tests if endpoints can have aliases
-// and if they can be used for selecting endpoints
-func TestEndpointAlias(t *testing.T) {
-	// our test config YAML
+// Test_Endpoint_Alias tests if endpoints can have aliases
+// and if they can be used for selecting endpoints.
+func Test_Endpoint_Alias(t *testing.T) {
+	// our test config YAML.
 	yamlText := `last_version_check: 0001-01-01T00:00:00Z
 updated: 2017-09-29T11:23:15+02:00
 endpoints:
@@ -276,7 +276,7 @@ selected_endpoint: https://other.endpoint`
 		t.Fatal(err)
 	}
 
-	// first, selected endpoint must have empty alias
+	// first, selected endpoint must have empty alias.
 	if Config.EndpointConfig(Config.SelectedEndpoint).Alias != "" {
 		t.Errorf("Expected alias '', got '%s'", Config.EndpointConfig(Config.SelectedEndpoint).Alias)
 	}
@@ -291,12 +291,12 @@ selected_endpoint: https://other.endpoint`
 		t.Errorf("Expected endpoint 'https://myapi.domain.tld', got '%s'", ep)
 	}
 
-	// after selection, selected endpoint must have alias
+	// after selection, selected endpoint must have alias.
 	if Config.EndpointConfig(ep).Alias != "myalias" {
 		t.Errorf("Expected alias 'myalias', got '%s'", Config.EndpointConfig(Config.SelectedEndpoint).Alias)
 	}
 
-	// try selecting using a non-existing alias/URL
+	// try selecting using a non-existing alias/URL.
 	err = Config.SelectEndpoint("non-existing-alias")
 	if !IsEndpointNotDefinedError(err) {
 		t.Errorf("Expected endpointNotDefinedError, got '%s'", err)
@@ -304,13 +304,13 @@ selected_endpoint: https://other.endpoint`
 
 }
 
-func Test_SetProvider(t *testing.T) {
+func Test_Set_Provider(t *testing.T) {
 	var testCases = []struct {
 		configYAML           string
 		expectedErrorMatcher func(error) bool
 	}{
 		{
-			// selected endpoint already has a provider set
+			// selected endpoint already has a provider set.
 			configYAML: `endpoints:
   https://myapi.domain.tld:
     provider: foo
