@@ -38,7 +38,7 @@
   version = "1.7.0"
 
 [[constraint]]
-  branch = "master"
+  branch = "use-errors-package"
   name = "github.com/giantswarm/microerror"
 
 [[constraint]]

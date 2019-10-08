@@ -480,7 +480,7 @@ func (c *configStruct) AuthHeaderGetter(endpoint string, overridingToken string)
 
 				// Update the config file with the new access token.
 				if err := Config.StoreEndpointAuth(endpoint, endpointConfig.Alias, "", idToken.Email, "Bearer", refreshTokenResponse.AccessToken, refreshToken); err != nil {
-					return "", microerror.Maskf(err, "Error while attempting to store the token in the config file")
+					return "", microerror.Mask(err)
 				}
 
 				// Use the new access token.

@@ -16,7 +16,7 @@ import (
 func GarbageCollectKeyPairs(fs afero.Fs) error {
 	files, err := afero.ReadDir(fs, CertsDirPath)
 	if err != nil {
-		return microerror.Maskf(err, "could not list files in certs folder "+CertsDirPath)
+		return microerror.Mask(err)
 	}
 
 	// find out which certificates in certs folder have expired.
@@ -30,12 +30,12 @@ func GarbageCollectKeyPairs(fs afero.Fs) error {
 			// read file content
 			content, err := afero.ReadFile(fs, path)
 			if err != nil {
-				return microerror.Maskf(err, "could not read file "+path)
+				return microerror.Mask(err)
 			}
 
 			expired, err := isCertExpired(content)
 			if err != nil {
-				return microerror.Maskf(err, "could not determine if certificate is expired: "+path)
+				return microerror.Mask(err)
 			}
 
 			if expired {

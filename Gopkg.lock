@@ -26,12 +26,12 @@
   version = "v1.7.0"
 
 [[projects]]
-  branch = "master"
-  digest = "1:44ab875c6630c40548718738760744c9e38a3a872e97dbb331d1d142ab503840"
+  branch = "use-errors-package"
+  digest = "1:b488ed56eff821de4731a97fbfdd2a6d51acd60e39458e1e87a6bfe985ad9efe"
   name = "github.com/giantswarm/microerror"
   packages = ["."]
   pruneopts = "NUT"
-  revision = "f446cc816a48d6626ddce3ecd966c8b6be3a1985"
+  revision = "04e885f732bd193eab2896838869abf55d8b7a6d"
 
 [[projects]]
   digest = "1:53151cc4366e3945282d4b783fd41f35222cabbc75601e68d8133648c63498d1"
@@ -67,14 +67,6 @@
   pruneopts = "NUT"
   revision = "23d116af351c84513e1946b527c88823e476be13"
   version = "v1.3.0"
-
-[[projects]]
-  branch = "master"
-  digest = "1:549b29a9ce8e3d05ca4e9c7b67285f15c0974ef6a2b89317c50105c5687781c8"
-  name = "github.com/juju/errgo"
-  packages = ["."]
-  pruneopts = "NUT"
-  revision = "08cceb5d0b5331634b9826762a8fd53b29b86ad8"
 
 [[projects]]
   digest = "1:08c231ec84231a7e23d67e4b58f975e1423695a32467a362ee55a803f9de8061"
