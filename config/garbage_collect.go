@@ -86,7 +86,7 @@ func isCertExpired(pemContent []byte) (bool, error) {
 
 	cert, err := x509.ParseCertificate(block.Bytes)
 	if err != nil {
-		return false, microerror.Maskf(errors.New("could not parse certificate"), err.Error())
+		return false, microerror.Maskf(executionFailedError, "could not parse certificate because of %#q", err.Error())
 	}
 
 	if cert.NotAfter.After(time.Now()) {
