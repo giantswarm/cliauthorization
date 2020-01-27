@@ -711,7 +711,6 @@ func normalizeEndpoint(u string) string {
 
 	if isHttp {
 		fmt.Println(color.YellowString("[Warning] Endpoint URL uses an insecure protocol"))
-		fmt.Println("Endpoint URL protocol was automatically converted to HTTPS")
 	}
 
 	// strip extra stuff.
