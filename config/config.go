@@ -696,7 +696,6 @@ func getKubeconfigPaths(homeDir string) []string {
 // normalizeEndpoint sanitizes a user-entered endpoint URL.
 // - turn to lowercase
 // - Adds https:// if no scheme is given
-// - Replace http:// with https://
 // - Removes path and other junk
 // Errors are printed immediately here, to simplify handling of this function.
 func normalizeEndpoint(u string) string {
@@ -711,8 +710,6 @@ func normalizeEndpoint(u string) string {
 	}
 
 	if isHttp {
-		u = strings.Replace(u, "http://", "https://", 1)
-
 		fmt.Println(color.YellowString("[Warning] Endpoint URL uses an insecure protocol"))
 		fmt.Println("Endpoint URL protocol was automatically converted to HTTPS")
 	}

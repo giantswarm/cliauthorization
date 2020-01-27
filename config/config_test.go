@@ -236,7 +236,7 @@ var normalizeEndpointTests = []struct {
 	{"https://localhost:9000", "https://localhost:9000"},
 	{"https://localhost:9000/", "https://localhost:9000"},
 	{"https://user:pass@localhost:9000/", "https://localhost:9000"},
-	{"http://localhost:9000", "https://localhost:9000"},
+	{"http://localhost:9000", "http://localhost:9000"},
 }
 
 // Test_Normalize_Endpoint tests the normalizeEndpoint function.
