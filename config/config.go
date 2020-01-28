@@ -710,13 +710,13 @@ func normalizeEndpoint(u string) string {
 	}
 
 	if isHttp {
-		fmt.Println(color.YellowString("[Warning] Endpoint URL uses an insecure protocol"))
+		fmt.Println(color.YellowString("Warning: endpoint URL uses an insecure protocol"))
 	}
 
 	// strip extra stuff.
 	p, err := url.Parse(u)
 	if err != nil {
-		fmt.Printf("[Warning] Endpoint URL normalization yielded: %s\n", err)
+		fmt.Printf("Warning: endpoint URL normalization yielded: %s\n", err)
 	}
 
 	// remove everything but scheme and host.
