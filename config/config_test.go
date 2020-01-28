@@ -232,10 +232,11 @@ var normalizeEndpointTests = []struct {
 	{"myapi", "https://myapi"},
 	{"myapi.com", "https://myapi.com"},
 	{"some.api.server/foo/bar", "https://some.api.server"},
-	{"http://127.0.0.1:64703", "http://127.0.0.1:64703"},
+	{"https://127.0.0.1:64703", "https://127.0.0.1:64703"},
+	{"https://localhost:9000", "https://localhost:9000"},
+	{"https://localhost:9000/", "https://localhost:9000"},
+	{"https://user:pass@localhost:9000/", "https://localhost:9000"},
 	{"http://localhost:9000", "http://localhost:9000"},
-	{"http://localhost:9000/", "http://localhost:9000"},
-	{"http://user:pass@localhost:9000/", "http://localhost:9000"},
 }
 
 // Test_Normalize_Endpoint tests the normalizeEndpoint function.

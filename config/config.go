@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/fatih/color"
 	"github.com/giantswarm/gscliauth/oidc"
 	"github.com/giantswarm/microerror"
 	"github.com/spf13/afero"
@@ -701,9 +702,15 @@ func normalizeEndpoint(u string) string {
 	// lowercase.
 	u = strings.ToLower(u)
 
+	isHttp := strings.HasPrefix(u, "http://")
+
 	// if URL has no scheme, prefix it with the default scheme.
-	if !strings.HasPrefix(u, "https://") && !strings.HasPrefix(u, "http://") {
+	if !strings.HasPrefix(u, "https://") && !isHttp {
 		u = "https://" + u
+	}
+
+	if isHttp {
+		fmt.Println(color.YellowString("[Warning] Endpoint URL uses an insecure protocol"))
 	}
 
 	// strip extra stuff.
