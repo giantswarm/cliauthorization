@@ -345,3 +345,68 @@ selected_endpoint: ""`,
 		}
 	}
 }
+
+func Test_DeleteEndpoint(t *testing.T) {
+	var testCases = []struct {
+		configYAML           string
+		valueToTest          string
+		expectedErrorMatcher func(error) bool
+	}{
+		{
+			// Endpoint is not defined
+			configYAML: `selected_endpoint: ""
+endpoints:
+  https://myapi.domain.tld:
+    alias: myalias`,
+			valueToTest:          "test",
+			expectedErrorMatcher: IsEndpointNotDefinedError,
+		},
+		{
+			// Endpoint from alias
+			configYAML: `selected_endpoint: ""
+endpoints:
+  https://myapi.domain.tld:
+    alias: myalias`,
+			valueToTest:          "myalias",
+			expectedErrorMatcher: nil,
+		},
+		{
+			// Endpoint as URL
+			configYAML: `selected_endpoint: ""
+endpoints:
+  https://myapi.domain.tld:
+    alias: myalias`,
+			valueToTest:          "https://myapi.domain.tld",
+			expectedErrorMatcher: nil,
+		},
+		{
+			// Endpoint is currently selected endpoint
+			configYAML: `selected_endpoint: "https://myapi.domain.tld"
+endpoints:
+  https://myapi.domain.tld:
+    alias: myalias`,
+			valueToTest:          "myalias",
+			expectedErrorMatcher: nil,
+		},
+	}
+
+	for index, tc := range testCases {
+		fs := afero.NewMemMapFs()
+		_, err := tempConfig(fs, tc.configYAML)
+		if err != nil {
+			t.Errorf("Error creating temporary config for test case %d: %q", index, err)
+		}
+
+		t.Logf("Config: %#v", Config)
+
+		err = Config.DeleteEndpoint(tc.valueToTest)
+
+		if tc.expectedErrorMatcher != nil {
+			if !tc.expectedErrorMatcher(err) {
+				t.Errorf("Test case %d: Unexpected error: %q", index, err)
+			}
+		} else if err != nil {
+			t.Errorf("Test case %d: Unexpected error: %q", index, err)
+		}
+	}
+}
