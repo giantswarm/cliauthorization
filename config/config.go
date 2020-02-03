@@ -311,6 +311,53 @@ func (c *configStruct) ChooseEndpoint(overridingEndpointAliasOrURL string) strin
 	return c.SelectedEndpoint
 }
 
+// DeleteEndpoint deletes the given endpoint from the configuration.
+// The argument can either be an alias or a URL
+func (c *configStruct) DeleteEndpoint(endpointAliasOrURL string) error {
+	if endpointAliasOrURL == "" {
+		return microerror.Mask(endpointNotDefinedError)
+	}
+
+	var (
+		endpointToUse string
+
+		argumentIsAlias = false
+	)
+
+	// Check if the endpoint URL matches an alias
+	if c.HasEndpointAlias(endpointAliasOrURL) {
+		argumentIsAlias = true
+		var endpointError error
+		endpointToUse, endpointError = c.EndpointByAlias(endpointAliasOrURL)
+
+		if endpointError != nil {
+			return microerror.Mask(endpointError)
+		}
+	}
+
+	c.endpointsMutex.Lock()
+	defer c.endpointsMutex.Unlock()
+
+	if !argumentIsAlias {
+		endpointToUse = normalizeEndpoint(endpointAliasOrURL)
+		if _, ok := c.endpoints[endpointToUse]; !ok {
+			return microerror.Mask(endpointNotDefinedError)
+		}
+	}
+
+	delete(c.endpoints, endpointToUse)
+
+	// Reset the selected endpoint to default if the
+	// deleted endpoint was previously selected
+	if c.SelectedEndpoint == endpointToUse {
+		c.SelectedEndpoint = ""
+	}
+
+	WriteToFile()
+
+	return nil
+}
+
 // ChooseToken chooses a token to use, according to a rule set.
 // - If the given token is not empty, we use (return) that
 // - If the given token is empty and we have an auth token for the given
