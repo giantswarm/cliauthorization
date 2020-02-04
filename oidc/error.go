@@ -2,7 +2,7 @@ package oidc
 
 import "github.com/giantswarm/microerror"
 
-var authorizationError = &microerror.Error{
+var authorizationError = microerror.Error{
 	Kind: "authorizationError",
 }
 
@@ -11,7 +11,7 @@ func IsAuthorizationError(err error) bool {
 	return microerror.Cause(err) == authorizationError
 }
 
-var refreshError = &microerror.Error{
+var refreshError = microerror.Error{
 	Kind: "refreshError",
 }
 
@@ -21,7 +21,7 @@ func IsRefreshError(err error) bool {
 }
 
 // To be used when a token's signature or syntax is invalid.
-var tokenInvalidError = &microerror.Error{
+var tokenInvalidError = microerror.Error{
 	Kind: "tokenInvalidError",
 }
 
@@ -31,7 +31,7 @@ func IsTokenInvalidError(err error) bool {
 }
 
 // To be used when a token's iat claim (issued at) is bad.
-var tokenIssuedAtError = &microerror.Error{
+var tokenIssuedAtError = microerror.Error{
 	Kind: "tokenIssuedAtError",
 }
 

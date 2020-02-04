@@ -2,8 +2,20 @@ package config
 
 import "github.com/giantswarm/microerror"
 
+// executionFailedError is an error type for situations where Resource execution
+// cannot continue and must always fall back to operatorkit.
+//
+// This error should never be matched against and therefore there is no matcher
+// implement. For further information see:
+//
+//     https://github.com/giantswarm/fmt/blob/master/go/errors.md#matching-errors
+//
+var executionFailedError = microerror.Error{
+	Kind: "executionFailedError",
+}
+
 // endpointNotDefinedError means the user tries to use an endpoint that is not defined.
-var endpointNotDefinedError = &microerror.Error{
+var endpointNotDefinedError = microerror.Error{
 	Kind: "endpointNotDefinedError",
 }
 
@@ -13,7 +25,7 @@ func IsEndpointNotDefinedError(err error) bool {
 }
 
 // noEndpointSelectedError means no endpoint is currently selected.
-var noEndpointSelectedError = &microerror.Error{
+var noEndpointSelectedError = microerror.Error{
 	Kind: "noEndpointSelectedError",
 }
 
@@ -23,7 +35,7 @@ func IsNoEndpointSelectedError(err error) bool {
 }
 
 // endpointProviderIsImmuttableError means no endpoint is currently selected.
-var endpointProviderIsImmuttableError = &microerror.Error{
+var endpointProviderIsImmuttableError = microerror.Error{
 	Kind: "endpointProviderIsImmuttableError",
 }
 
@@ -34,7 +46,7 @@ func IsEndpointProviderIsImmuttableError(err error) bool {
 
 // aliasMustBeUniqueError should be used if the user tries to add an alias to
 // an endpoint, but the alias is already in use.
-var aliasMustBeUniqueError = &microerror.Error{
+var aliasMustBeUniqueError = microerror.Error{
 	Kind: "aliasMustBeUniqueError",
 }
 
@@ -44,7 +56,7 @@ func IsAliasMustBeUniqueError(err error) bool {
 }
 
 // credentialsRequiredError means an attempt to store incomplete credentials in the config.
-var credentialsRequiredError = &microerror.Error{
+var credentialsRequiredError = microerror.Error{
 	Kind: "credentialsRequiredError",
 	Desc: "email, password, or token must not be empty",
 }
@@ -54,7 +66,7 @@ func IsCredentialsRequiredError(err error) bool {
 	return microerror.Cause(err) == credentialsRequiredError
 }
 
-var garbageCollectionFailedError = &microerror.Error{
+var garbageCollectionFailedError = microerror.Error{
 	Kind: "garbageCollectionFailedError",
 }
 
@@ -63,7 +75,7 @@ func IsGarbageCollectionFailedError(err error) bool {
 	return microerror.Cause(err) == garbageCollectionFailedError
 }
 
-var garbageCollectionPartiallyFailedError = &microerror.Error{
+var garbageCollectionPartiallyFailedError = microerror.Error{
 	Kind: "garbageCollectionPartiallyFailedError",
 }
 
@@ -74,7 +86,7 @@ func IsGarbageCollectionPartiallyFailedError(err error) bool {
 
 // unableToRefreshToken indicates that we were not able to get a new access token
 // when we attempted to do so.
-var unableToRefreshTokenError = &microerror.Error{
+var unableToRefreshTokenError = microerror.Error{
 	Kind: "IsUnableToRefreshTokenError",
 }
 

@@ -3,7 +3,6 @@ package config
 import (
 	"crypto/x509"
 	"encoding/pem"
-	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -16,7 +15,7 @@ import (
 func GarbageCollectKeyPairs(fs afero.Fs) error {
 	files, err := afero.ReadDir(fs, CertsDirPath)
 	if err != nil {
-		return microerror.Maskf(err, "could not list files in certs folder "+CertsDirPath)
+		return microerror.Mask(err)
 	}
 
 	// find out which certificates in certs folder have expired.
@@ -30,12 +29,12 @@ func GarbageCollectKeyPairs(fs afero.Fs) error {
 			// read file content
 			content, err := afero.ReadFile(fs, path)
 			if err != nil {
-				return microerror.Maskf(err, "could not read file "+path)
+				return microerror.Mask(err)
 			}
 
 			expired, err := isCertExpired(content)
 			if err != nil {
-				return microerror.Maskf(err, "could not determine if certificate is expired: "+path)
+				return microerror.Mask(err)
 			}
 
 			if expired {
@@ -81,12 +80,12 @@ func GarbageCollectKeyPairs(fs afero.Fs) error {
 func isCertExpired(pemContent []byte) (bool, error) {
 	block, _ := pem.Decode(pemContent)
 	if block == nil {
-		return false, microerror.Mask(errors.New("could not parse PEM"))
+		return false, microerror.Maskf(executionFailedError, "could not parse PEM")
 	}
 
 	cert, err := x509.ParseCertificate(block.Bytes)
 	if err != nil {
-		return false, microerror.Maskf(errors.New("could not parse certificate"), err.Error())
+		return false, microerror.Maskf(executionFailedError, "could not parse certificate with error %#q", err.Error())
 	}
 
 	if cert.NotAfter.After(time.Now()) {
