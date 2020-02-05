@@ -35,7 +35,7 @@ func GarbageCollectKeyPairs(fs afero.Fs) error {
 
 			expired, err := isCertExpired(content)
 			if err != nil {
-				return microerror.Maskf(executionFailedError, "could not determine if certificate is expired for path %#q with error %#q", path, err)
+				return microerror.Mask(err)
 			}
 
 			if expired {
