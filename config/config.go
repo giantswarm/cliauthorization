@@ -77,6 +77,9 @@ var (
 	// KubeConfigPaths is the path(s) of kubeconfig files as slice of strings.
 	KubeConfigPaths []string
 
+	// IsKubectlPlugin answers the question "Is this running as a kubectl plugin"?
+	IsKubectlPlugin bool
+
 	// SystemUser is the current system user as user.User (os/user).
 	SystemUser *user.User
 )
@@ -574,6 +577,8 @@ func init() {
 		panic(err.Error())
 	}
 	HomeDirPath = SystemUser.HomeDir
+	// Check if the app is running as a kubectl plugin
+	IsKubectlPlugin = strings.Contains(os.Args[0], "kubectl")
 
 	// create default config dir path
 	DefaultConfigDirPath = path.Join(HomeDirPath, ".config", ProgramName)
