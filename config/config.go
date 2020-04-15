@@ -370,6 +370,11 @@ func (c *configStruct) ChooseToken(endpoint, overridingToken string) string {
 		return overridingToken
 	}
 
+	tokenFromEnv := os.Getenv("GSCTL_AUTH_TOKEN")
+	if tokenFromEnv != "" {
+		return tokenFromEnv
+	}
+
 	endpointConfig := c.EndpointConfig(ep)
 	if endpointConfig != nil && endpointConfig.Token != "" {
 		return endpointConfig.Token
