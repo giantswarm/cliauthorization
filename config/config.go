@@ -168,7 +168,7 @@ type endpointConfig struct {
 	Alias string `yaml:"alias,omitempty"`
 
 	// Email is the email address of the authenticated user.
-	Email string `yaml:"email"`
+	Email string `yaml:"email,omitempty"`
 
 	// Provider is the cloud provider used in the installation.
 	Provider string `yaml:"provider"`
