@@ -481,6 +481,7 @@ func (c *configStruct) Logout(endpointURL string) {
 	if ep == c.SelectedEndpoint {
 		c.Token = ""
 		c.Scheme = ""
+		c.Email = ""
 	}
 
 	endpointConfig := c.EndpointConfig(ep)
@@ -488,6 +489,7 @@ func (c *configStruct) Logout(endpointURL string) {
 		endpointConfig.RefreshToken = ""
 		endpointConfig.Token = ""
 		endpointConfig.Scheme = ""
+		endpointConfig.Email = ""
 	}
 
 	WriteToFile()
