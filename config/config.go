@@ -305,6 +305,12 @@ func (c *configStruct) ChooseEndpoint(overridingEndpointAliasOrURL string) strin
 		}
 
 		ep := normalizeEndpoint(overridingEndpointAliasOrURL)
+
+		// overwrite c.SelectedEndpoint to make the override accessible for
+		// other calls to the library
+		// Don't use c.SelectEndpoint() as it writes to the config file
+		c.SelectedEndpoint = ep
+
 		return ep
 	}
 
