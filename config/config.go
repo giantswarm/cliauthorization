@@ -276,25 +276,6 @@ func (c *configStruct) selectEndpoint(endpointAliasOrURL string) error {
 		}
 	}
 
-	// add the endpoint to the c.endpoints map
-	// initialize with empty fields, required
-	// fields should be filled by calls to
-	// ChooseToken, ChooseScheme, SetProvider...
-	if _, ok := c.endpoints[ep]; !ok {
-		err := c.setEndpoint(
-			ep, // endpointURL
-			"", // alias
-			"", // provider
-			"", // email
-			"", // scheme
-			"", // token
-			"", // refreshToken
-		)
-		if err != nil {
-			return microerror.Mask(err)
-		}
-	}
-
 	// Migrate empty scheme to 'giantswarm'.
 	if c.endpoints[ep].Scheme == "" {
 		c.endpoints[ep].Scheme = "giantswarm"
@@ -335,14 +316,30 @@ func (c *configStruct) ChooseEndpoint(overridingEndpointAliasOrURL string) strin
 	}
 
 	if overridingEndpointAliasOrURL != "" {
+		var ep string
 		// check if overridingEndpointAliasOrURL is an alias.
 		if c.HasEndpointAlias(overridingEndpointAliasOrURL) {
-			ep, _ := c.EndpointByAlias(overridingEndpointAliasOrURL)
-			c.selectEndpoint(ep)
+			ep, _ = c.EndpointByAlias(overridingEndpointAliasOrURL)
 		} else {
-			// selectEndpoint initializes the endpoint
-			c.selectEndpoint(overridingEndpointAliasOrURL)
+			ep = normalizeEndpoint(overridingEndpointAliasOrURL)
+			// initialize the endpoint by
+			// addding the endpoint to the c.endpoints map.
+			// initialize with empty fields, required
+			// fields should be filled by calls to
+			// ChooseToken, ChooseScheme, SetProvider...
+			if _, ok := c.endpoints[ep]; !ok {
+				c.setEndpoint(
+					ep, // endpointURL
+					"", // alias
+					"", // provider
+					"", // email
+					"", // scheme
+					"", // token
+					"", // refreshToken
+				)
+			}
 		}
+		c.selectEndpoint(ep)
 	}
 
 	// finally return the SelectedEndpoint (it has been set in the lines above)
