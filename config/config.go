@@ -183,14 +183,8 @@ type endpointConfig struct {
 	Token string `yaml:"token,omitempty"`
 }
 
-// StoreEndpointAuth adds an endpoint to the configStruct.Endpoints field
-// (if not yet there). This should only be done after successful authentication.
-func (c *configStruct) StoreEndpointAuth(endpointURL, alias, provider, email, scheme, token, refreshToken string) error {
+func (c *configStruct) setEndpoint(endpointURL, alias, provider, email, scheme, token, refreshToken string) error {
 	ep := normalizeEndpoint(endpointURL)
-
-	if email == "" || token == "" {
-		return microerror.Mask(credentialsRequiredError)
-	}
 
 	// Ensure alias uniqueness.
 	// If the alias is already in use, it has to point to the
@@ -232,16 +226,28 @@ func (c *configStruct) StoreEndpointAuth(endpointURL, alias, provider, email, sc
 		c.endpoints[ep].Alias = alias
 	}
 
+	return nil
+}
+
+// StoreEndpointAuth adds an endpoint to the configStruct.Endpoints field
+// (if not yet there). This should only be done after successful authentication.
+func (c *configStruct) StoreEndpointAuth(endpointURL, alias, provider, email, scheme, token, refreshToken string) error {
+	if email == "" || token == "" {
+		return microerror.Mask(credentialsRequiredError)
+	}
+
+	err := c.setEndpoint(endpointURL, alias, provider, email, scheme, token, refreshToken)
+
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
 	WriteToFile()
 
 	return nil
 }
 
-// SelectEndpoint makes the given endpoint the selected one. The argument
-// can either be an alias (that will be used as is) or
-// a URL which will undergo normalization.
-func (c *configStruct) SelectEndpoint(endpointAliasOrURL string) error {
-
+func (c *configStruct) selectEndpoint(endpointAliasOrURL string) error {
 	if endpointAliasOrURL == "" {
 		return microerror.Mask(endpointNotDefinedError)
 	}
@@ -270,6 +276,25 @@ func (c *configStruct) SelectEndpoint(endpointAliasOrURL string) error {
 		}
 	}
 
+	// add the endpoint to the c.endpoints map
+	// initialize with empty fields, required
+	// fields should be filled by calls to
+	// ChooseToken, ChooseScheme, SetProvider...
+	if _, ok := c.endpoints[ep]; !ok {
+		err := c.setEndpoint(
+			ep, // endpointURL
+			"", // alias
+			"", // provider
+			"", // email
+			"", // scheme
+			"", // token
+			"", // refreshToken
+		)
+		if err != nil {
+			return microerror.Mask(err)
+		}
+	}
+
 	// Migrate empty scheme to 'giantswarm'.
 	if c.endpoints[ep].Scheme == "" {
 		c.endpoints[ep].Scheme = "giantswarm"
@@ -280,6 +305,18 @@ func (c *configStruct) SelectEndpoint(endpointAliasOrURL string) error {
 	c.Scheme = c.endpoints[ep].Scheme
 	c.Token = c.endpoints[ep].Token
 	c.Email = c.endpoints[ep].Email
+
+	return nil
+}
+
+// SelectEndpoint makes the given endpoint the selected one. The argument
+// can either be an alias (that will be used as is) or
+// a URL which will undergo normalization.
+func (c *configStruct) SelectEndpoint(endpointAliasOrURL string) error {
+	err := c.selectEndpoint(endpointAliasOrURL)
+	if err != nil {
+		return microerror.Mask(err)
+	}
 
 	WriteToFile()
 
@@ -301,20 +338,14 @@ func (c *configStruct) ChooseEndpoint(overridingEndpointAliasOrURL string) strin
 		// check if overridingEndpointAliasOrURL is an alias.
 		if c.HasEndpointAlias(overridingEndpointAliasOrURL) {
 			ep, _ := c.EndpointByAlias(overridingEndpointAliasOrURL)
-			return ep
+			c.selectEndpoint(ep)
+		} else {
+			// selectEndpoint initializes the endpoint
+			c.selectEndpoint(overridingEndpointAliasOrURL)
 		}
-
-		ep := normalizeEndpoint(overridingEndpointAliasOrURL)
-
-		// overwrite c.SelectedEndpoint to make the override accessible for
-		// other calls to the library
-		// Don't use c.SelectEndpoint() as it writes to the config file
-		c.SelectedEndpoint = ep
-
-		return ep
 	}
 
-	// as a last resort, return the currently selected endpoint.
+	// finally return the SelectedEndpoint (it has been set in the lines above)
 	return c.SelectedEndpoint
 }
 
@@ -374,6 +405,8 @@ func (c *configStruct) ChooseToken(endpoint, overridingToken string) string {
 	ep := normalizeEndpoint(endpoint)
 
 	if overridingToken != "" {
+		c.endpoints[ep].Token = overridingToken
+
 		return overridingToken
 	}
 
@@ -394,6 +427,8 @@ func (c *configStruct) ChooseScheme(endpoint string, CmdToken string) string {
 	ep := normalizeEndpoint(endpoint)
 
 	if CmdToken != "" {
+		c.endpoints[ep].Scheme = "giantswarm"
+
 		return "giantswarm"
 	}
 
