@@ -503,8 +503,17 @@ func (c *configStruct) SetProvider(provider string) error {
 
 	c.endpoints[c.SelectedEndpoint].Provider = provider
 	c.Provider = provider
-	// TODO teach gscliauth to abstain from writing to file if not desired
-	WriteToFile()
+
+	// ignore errors like a barbarian
+	conf, _ := readFromFile(FileSystem, ConfigFilePath)
+
+	// only write to the config file if the currently selected
+	// endpoint exists in the config file.
+	// This prevents writing endpoint configuration from
+	// command line flags to the file
+	if _, ok := conf.endpoints[c.SelectedEndpoint]; ok {
+		WriteToFile()
+	}
 
 	return nil
 }
