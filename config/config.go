@@ -402,7 +402,9 @@ func (c *configStruct) ChooseToken(endpoint, overridingToken string) string {
 	ep := normalizeEndpoint(endpoint)
 
 	if overridingToken != "" {
-		c.endpoints[ep].Token = overridingToken
+		if _, ok := c.endpoints[ep]; ok {
+			c.endpoints[ep].Token = overridingToken
+		}
 
 		return overridingToken
 	}
@@ -424,7 +426,9 @@ func (c *configStruct) ChooseScheme(endpoint string, CmdToken string) string {
 	ep := normalizeEndpoint(endpoint)
 
 	if CmdToken != "" {
-		c.endpoints[ep].Scheme = "giantswarm"
+		if _, ok := c.endpoints[ep]; ok {
+			c.endpoints[ep].Scheme = "giantswarm"
+		}
 
 		return "giantswarm"
 	}
@@ -499,6 +503,7 @@ func (c *configStruct) SetProvider(provider string) error {
 
 	c.endpoints[c.SelectedEndpoint].Provider = provider
 	c.Provider = provider
+	// TODO teach gscliauth to abstain from writing to file if not desired
 	WriteToFile()
 
 	return nil
