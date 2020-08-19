@@ -403,6 +403,9 @@ func (c *configStruct) ChooseToken(endpoint, overridingToken string) string {
 
 	if overridingToken != "" {
 		if _, ok := c.endpoints[ep]; ok {
+			c.endpointsMutex.Lock()
+			defer c.endpointsMutex.Unlock()
+
 			c.endpoints[ep].Token = overridingToken
 		}
 
@@ -427,6 +430,9 @@ func (c *configStruct) ChooseScheme(endpoint string, CmdToken string) string {
 
 	if CmdToken != "" {
 		if _, ok := c.endpoints[ep]; ok {
+			c.endpointsMutex.Lock()
+			defer c.endpointsMutex.Unlock()
+
 			c.endpoints[ep].Scheme = "giantswarm"
 		}
 
