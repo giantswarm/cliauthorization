@@ -10,8 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 - Increase resiliency using custom endpoints in `ChooseEndpoint`, `ChooseScheme`, `ChooseToken` and `SetProvider`
-- When using custom endpoints, unknown endpoint configurations will not get persisted into the config file any more
-- When using custom endpoints, the custom endpoint will not be selected any more
+- When using custom endpoints, unknown endpoint configurations will not be persisted in the config file anymore
+- When using custom endpoints, the custom endpoint will not be selected anymore
 
 ## [0.2.1] 2020-04-22
 
