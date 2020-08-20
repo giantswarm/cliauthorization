@@ -517,8 +517,10 @@ func (c *configStruct) SetProvider(provider string) error {
 	// endpoint exists in the config file.
 	// This prevents writing endpoint configuration from
 	// command line flags to the file
-	if _, ok := conf.endpoints[c.SelectedEndpoint]; ok {
-		WriteToFile()
+	if conf != nil {
+		if _, ok := conf.endpoints[c.SelectedEndpoint]; ok {
+			WriteToFile()
+		}
 	}
 
 	return nil
