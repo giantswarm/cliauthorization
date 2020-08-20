@@ -183,14 +183,8 @@ type endpointConfig struct {
 	Token string `yaml:"token,omitempty"`
 }
 
-// StoreEndpointAuth adds an endpoint to the configStruct.Endpoints field
-// (if not yet there). This should only be done after successful authentication.
-func (c *configStruct) StoreEndpointAuth(endpointURL, alias, provider, email, scheme, token, refreshToken string) error {
+func (c *configStruct) setEndpoint(endpointURL, alias, provider, email, scheme, token, refreshToken string) error {
 	ep := normalizeEndpoint(endpointURL)
-
-	if email == "" || token == "" {
-		return microerror.Mask(credentialsRequiredError)
-	}
 
 	// Ensure alias uniqueness.
 	// If the alias is already in use, it has to point to the
@@ -232,16 +226,28 @@ func (c *configStruct) StoreEndpointAuth(endpointURL, alias, provider, email, sc
 		c.endpoints[ep].Alias = alias
 	}
 
+	return nil
+}
+
+// StoreEndpointAuth adds an endpoint to the configStruct.Endpoints field
+// (if not yet there). This should only be done after successful authentication.
+func (c *configStruct) StoreEndpointAuth(endpointURL, alias, provider, email, scheme, token, refreshToken string) error {
+	if email == "" || token == "" {
+		return microerror.Mask(credentialsRequiredError)
+	}
+
+	err := c.setEndpoint(endpointURL, alias, provider, email, scheme, token, refreshToken)
+
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
 	WriteToFile()
 
 	return nil
 }
 
-// SelectEndpoint makes the given endpoint the selected one. The argument
-// can either be an alias (that will be used as is) or
-// a URL which will undergo normalization.
-func (c *configStruct) SelectEndpoint(endpointAliasOrURL string) error {
-
+func (c *configStruct) selectEndpoint(endpointAliasOrURL string) error {
 	if endpointAliasOrURL == "" {
 		return microerror.Mask(endpointNotDefinedError)
 	}
@@ -281,6 +287,18 @@ func (c *configStruct) SelectEndpoint(endpointAliasOrURL string) error {
 	c.Token = c.endpoints[ep].Token
 	c.Email = c.endpoints[ep].Email
 
+	return nil
+}
+
+// SelectEndpoint makes the given endpoint the selected one. The argument
+// can either be an alias (that will be used as is) or
+// a URL which will undergo normalization.
+func (c *configStruct) SelectEndpoint(endpointAliasOrURL string) error {
+	err := c.selectEndpoint(endpointAliasOrURL)
+	if err != nil {
+		return microerror.Mask(err)
+	}
+
 	WriteToFile()
 
 	return nil
@@ -298,17 +316,33 @@ func (c *configStruct) ChooseEndpoint(overridingEndpointAliasOrURL string) strin
 	}
 
 	if overridingEndpointAliasOrURL != "" {
+		var ep string
 		// check if overridingEndpointAliasOrURL is an alias.
 		if c.HasEndpointAlias(overridingEndpointAliasOrURL) {
-			ep, _ := c.EndpointByAlias(overridingEndpointAliasOrURL)
-			return ep
+			ep, _ = c.EndpointByAlias(overridingEndpointAliasOrURL)
+		} else {
+			ep = normalizeEndpoint(overridingEndpointAliasOrURL)
+			// initialize the endpoint by
+			// addding the endpoint to the c.endpoints map.
+			// initialize with empty fields, required
+			// fields should be filled by calls to
+			// ChooseToken, ChooseScheme, SetProvider...
+			if _, ok := c.endpoints[ep]; !ok {
+				c.setEndpoint(
+					ep, // endpointURL
+					"", // alias
+					"", // provider
+					"", // email
+					"", // scheme
+					"", // token
+					"", // refreshToken
+				)
+			}
 		}
-
-		ep := normalizeEndpoint(overridingEndpointAliasOrURL)
-		return ep
+		c.selectEndpoint(ep)
 	}
 
-	// as a last resort, return the currently selected endpoint.
+	// finally return the SelectedEndpoint (it has been set in the lines above)
 	return c.SelectedEndpoint
 }
 
@@ -368,6 +402,13 @@ func (c *configStruct) ChooseToken(endpoint, overridingToken string) string {
 	ep := normalizeEndpoint(endpoint)
 
 	if overridingToken != "" {
+		if _, ok := c.endpoints[ep]; ok {
+			c.endpointsMutex.Lock()
+			defer c.endpointsMutex.Unlock()
+
+			c.endpoints[ep].Token = overridingToken
+		}
+
 		return overridingToken
 	}
 
@@ -388,6 +429,13 @@ func (c *configStruct) ChooseScheme(endpoint string, CmdToken string) string {
 	ep := normalizeEndpoint(endpoint)
 
 	if CmdToken != "" {
+		if _, ok := c.endpoints[ep]; ok {
+			c.endpointsMutex.Lock()
+			defer c.endpointsMutex.Unlock()
+
+			c.endpoints[ep].Scheme = "giantswarm"
+		}
+
 		return "giantswarm"
 	}
 
@@ -461,7 +509,19 @@ func (c *configStruct) SetProvider(provider string) error {
 
 	c.endpoints[c.SelectedEndpoint].Provider = provider
 	c.Provider = provider
-	WriteToFile()
+
+	// ignore errors like a barbarian
+	conf, _ := readFromFile(FileSystem, ConfigFilePath)
+
+	// only write to the config file if the currently selected
+	// endpoint exists in the config file.
+	// This prevents writing endpoint configuration from
+	// command line flags to the file
+	if conf != nil {
+		if _, ok := conf.endpoints[c.SelectedEndpoint]; ok {
+			WriteToFile()
+		}
+	}
 
 	return nil
 }
