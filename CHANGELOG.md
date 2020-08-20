@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.2] - 2020-08-20
+
 - Increase resiliency using custom endpoints in `ChooseEndpoint`, `ChooseScheme`, `ChooseToken` and `SetProvider`
 - When using custom endpoints, unknown endpoint configurations will not be persisted in the config file anymore
 - When using custom endpoints, the custom endpoint will not be selected anymore
@@ -34,8 +36,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
-[Unreleased]: https://github.com/giantswarm/gscliauth/compare/v0.2.1...HEAD
-
+[Unreleased]: https://github.com/giantswarm/gscliauth/compare/v0.2.2...HEAD
+[0.2.2]: https://github.com/giantswarm/gscliauth/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/giantswarm/gscliauth/compare/v0.2.0...v0.2.1
 
 [0.2.0]: https://github.com/giantswarm/gscliauth/compare/v0.1.0...v0.2.0
