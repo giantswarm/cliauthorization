@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
 	"net/url"
 	"os"
@@ -12,7 +13,6 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/fatih/color"
 	"github.com/giantswarm/microerror"
 	"github.com/spf13/afero"
 	"gopkg.in/yaml.v2"
@@ -80,6 +80,9 @@ var (
 
 	// SystemUser is the current system user as user.User (os/user).
 	SystemUser *user.User
+
+	// Logger is the logger instance
+	Logger *log.Logger
 )
 
 // configStruct is the top-level data structure used to serialize and
@@ -648,6 +651,9 @@ func init() {
 // It's supposed to be called after init().
 // The configDirPath argument can be given to override the DefaultConfigDirPath.
 func Initialize(fs afero.Fs, configDirPath string) error {
+	Logger = log.New(os.Stdout, "", 0)
+	Logger.SetFlags(0)
+
 	FileSystem = fs
 	// Reset our Config object. This is particularly necessary for running
 	// multiple tests in a row.
@@ -711,11 +717,11 @@ func Initialize(fs afero.Fs, configDirPath string) error {
 		if err != nil {
 			// print error message, but don't interrupt the user.
 			if IsGarbageCollectionFailedError(err) {
-				fmt.Printf("Error in key pair garbage collection - no files deleted: %s\n", err.Error())
+				Logger.Printf("Error in key pair garbage collection - no files deleted: %s\n", err.Error())
 			} else if IsGarbageCollectionPartiallyFailedError(err) {
-				fmt.Printf("Error in key pair garbage collection - some files not deleted: %s\n", err.Error())
+				Logger.Printf("Error in key pair garbage collection - some files not deleted: %s\n", err.Error())
 			} else {
-				fmt.Printf("Error in key pair garbage collection: %s\n", err.Error())
+				Logger.Printf("Error in key pair garbage collection: %s\n", err.Error())
 			}
 		}
 	}
@@ -820,13 +826,13 @@ func normalizeEndpoint(u string) string {
 	}
 
 	if isHttp {
-		fmt.Println(color.YellowString("Warning: endpoint URL uses an insecure protocol"))
+		Logger.Println("Warning: endpoint URL uses an insecure protocol")
 	}
 
 	// strip extra stuff.
 	p, err := url.Parse(u)
 	if err != nil {
-		fmt.Printf("Warning: endpoint URL normalization yielded: %s\n", err)
+		Logger.Printf("Warning: endpoint URL normalization yielded: %s\n", err)
 	}
 
 	// remove everything but scheme and host.

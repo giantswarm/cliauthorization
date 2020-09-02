@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Switch to log.Logger based output
+
 ## [0.2.2] - 2020-08-20
 
 - Increase resiliency using custom endpoints in `ChooseEndpoint`, `ChooseScheme`, `ChooseToken` and `SetProvider`
