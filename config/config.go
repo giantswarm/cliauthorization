@@ -843,7 +843,7 @@ func normalizeEndpoint(u string) string {
 	}
 
 	if isHttp {
-		fmt.Fprintf(logger, "Warning: endpoint URL uses an insecure protocol")
+		fmt.Fprintf(logger, "Warning: endpoint URL uses an insecure protocol\n")
 	}
 
 	// strip extra stuff.
