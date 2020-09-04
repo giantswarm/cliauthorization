@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"io"
 	"math/rand"
 	"net/url"
 	"os"
@@ -12,7 +13,6 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/fatih/color"
 	"github.com/giantswarm/microerror"
 	"github.com/spf13/afero"
 	"gopkg.in/yaml.v2"
@@ -80,6 +80,8 @@ var (
 
 	// SystemUser is the current system user as user.User (os/user).
 	SystemUser *user.User
+
+	logger io.Writer = os.Stdout
 )
 
 // configStruct is the top-level data structure used to serialize and
@@ -647,7 +649,9 @@ func init() {
 // execution can be triggered in a controlled way.
 // It's supposed to be called after init().
 // The configDirPath argument can be given to override the DefaultConfigDirPath.
-func Initialize(fs afero.Fs, configDirPath string) error {
+func initialize(fs afero.Fs, configDirPath string, loggerToUse io.Writer) error {
+	logger = loggerToUse
+
 	FileSystem = fs
 	// Reset our Config object. This is particularly necessary for running
 	// multiple tests in a row.
@@ -711,16 +715,35 @@ func Initialize(fs afero.Fs, configDirPath string) error {
 		if err != nil {
 			// print error message, but don't interrupt the user.
 			if IsGarbageCollectionFailedError(err) {
-				fmt.Printf("Error in key pair garbage collection - no files deleted: %s\n", err.Error())
+				fmt.Fprintf(logger, "Error in key pair garbage collection - no files deleted: %s\n", err.Error())
 			} else if IsGarbageCollectionPartiallyFailedError(err) {
-				fmt.Printf("Error in key pair garbage collection - some files not deleted: %s\n", err.Error())
+				fmt.Fprintf(logger, "Error in key pair garbage collection - some files not deleted: %s\n", err.Error())
 			} else {
-				fmt.Printf("Error in key pair garbage collection: %s\n", err.Error())
+				fmt.Fprintf(logger, "Error in key pair garbage collection: %s\n", err.Error())
 			}
 		}
 	}
 
 	return nil
+}
+
+// Initialize sets up all configuration.
+// It's distinct from init() on purpose, so it's
+// execution can be triggered in a controlled way.
+// It's supposed to be called after init().
+// The configDirPath argument can be given to override the DefaultConfigDirPath.
+func Initialize(fs afero.Fs, configDirPath string) error {
+	return initialize(fs, configDirPath, os.Stdout)
+}
+
+// InitializeWithLogger sets up all configuration.
+// It's distinct from init() on purpose, so it's
+// execution can be triggered in a controlled way.
+// It's supposed to be called after init().
+// The configDirPath argument can be given to override the DefaultConfigDirPath.
+// the loggerToUse argument specifies the io.Writer to write log messages to.
+func InitializeWithLogger(fs afero.Fs, configDirPath string, loggerToUse io.Writer) error {
+	return initialize(fs, configDirPath, loggerToUse)
 }
 
 // populateConfigStruct assigns configuration values from the unmarshalled
@@ -820,13 +843,13 @@ func normalizeEndpoint(u string) string {
 	}
 
 	if isHttp {
-		fmt.Println(color.YellowString("Warning: endpoint URL uses an insecure protocol"))
+		fmt.Fprintf(logger, "Warning: endpoint URL uses an insecure protocol\n")
 	}
 
 	// strip extra stuff.
 	p, err := url.Parse(u)
 	if err != nil {
-		fmt.Printf("Warning: endpoint URL normalization yielded: %s\n", err)
+		fmt.Fprintf(logger, "Warning: endpoint URL normalization yielded: %s\n", err)
 	}
 
 	// remove everything but scheme and host.
