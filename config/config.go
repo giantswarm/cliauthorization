@@ -81,7 +81,7 @@ var (
 	// SystemUser is the current system user as user.User (os/user).
 	SystemUser *user.User
 
-	logger io.Writer
+	logger io.Writer = os.Stdout
 )
 
 // configStruct is the top-level data structure used to serialize and
