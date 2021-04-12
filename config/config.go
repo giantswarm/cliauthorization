@@ -718,6 +718,7 @@ func initialize(fs afero.Fs, configDirPath string, loggerToUse io.Writer) error 
 
 	// apply garbage collection.
 	randSource := rand.NewSource(time.Now().UnixNano())
+	// #nosec G404
 	randGenerator := rand.New(randSource)
 	if randGenerator.Float32() < garbageCollectionLikelihood {
 		err := GarbageCollectKeyPairs(fs)
