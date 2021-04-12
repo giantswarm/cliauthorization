@@ -531,7 +531,10 @@ func (c *configStruct) SetProvider(provider string) error {
 	// command line flags to the file
 	if conf != nil {
 		if _, ok := conf.endpoints[c.SelectedEndpoint]; ok {
-			WriteToFile()
+			err := WriteToFile()
+			if err != nil {
+				return microerror.Mask(err)
+			}
 		}
 	}
 
@@ -564,7 +567,7 @@ func (c *configStruct) Logout(endpointURL string) {
 		endpointConfig.Email = ""
 	}
 
-	WriteToFile()
+	_ = WriteToFile()
 }
 
 // AuthHeaderGetter returns a function that can get the auth header for a given endpoint that the client can use.
