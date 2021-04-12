@@ -630,11 +630,7 @@ func isTokenValid(token string) (expired bool) {
 	}
 
 	err = parsedToken.Claims.Valid()
-	if err != nil {
-		return false
-	}
-
-	return true
+	return err == nil
 }
 
 // init sets defaults and initializes config paths.
