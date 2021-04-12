@@ -42,6 +42,8 @@ const (
 	// garbageCollectionLikelihood is a number between 0 and 1 that sets the
 	// likelihood that we will execute garbage collection functions..
 	garbageCollectionLikelihood = .2
+
+	giantswarmAuthScheme = "giantswarm"
 )
 
 var (
@@ -280,7 +282,7 @@ func (c *configStruct) selectEndpoint(endpointAliasOrURL string) error {
 
 	// Migrate empty scheme to 'giantswarm'.
 	if c.endpoints[ep].Scheme == "" {
-		c.endpoints[ep].Scheme = "giantswarm"
+		c.endpoints[ep].Scheme = giantswarmAuthScheme
 	}
 
 	c.SelectedEndpoint = ep
@@ -435,10 +437,10 @@ func (c *configStruct) ChooseScheme(endpoint string, CmdToken string) string {
 			c.endpointsMutex.Lock()
 			defer c.endpointsMutex.Unlock()
 
-			c.endpoints[ep].Scheme = "giantswarm"
+			c.endpoints[ep].Scheme = giantswarmAuthScheme
 		}
 
-		return "giantswarm"
+		return giantswarmAuthScheme
 	}
 
 	endpointConfig := c.EndpointConfig(ep)
@@ -446,7 +448,7 @@ func (c *configStruct) ChooseScheme(endpoint string, CmdToken string) string {
 		return endpointConfig.Scheme
 	}
 
-	return "giantswarm"
+	return giantswarmAuthScheme
 }
 
 // HasEndpointAlias returns whether the given alias is used for an endpoint.
