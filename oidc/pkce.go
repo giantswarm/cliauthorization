@@ -1,6 +1,7 @@
 package oidc
 
 import (
+	"crypto/rand"
 	"crypto/sha256"
 	"embed"
 	"encoding/base64"
@@ -8,7 +9,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"math/rand"
 	"net/http"
 	"net/url"
 	"strings"
@@ -26,8 +26,10 @@ var (
 )
 
 const (
-	scope                = "openid email profile user_metadata https://giantswarm.io offline_access"
-	clientID             = "zQiFLUnrTFQwrybYzeY53hWWfhOKWRAU"
+	scope    = "openid email profile user_metadata https://giantswarm.io offline_access"
+	clientID = "zQiFLUnrTFQwrybYzeY53hWWfhOKWRAU"
+
+	// #nosec G101
 	tokenURL             = "https://giantswarm.eu.auth0.com/oauth/token"
 	redirectURL          = "http://localhost:8085/oauth/callback"
 	authorizationURLBase = "https://giantswarm.eu.auth0.com/authorize"
@@ -54,7 +56,13 @@ type PKCEResponse struct {
 func RunPKCE(audience string) (PKCEResponse, error) {
 	// Construct the authorization url.
 	//    1. Generate and store a random codeVerifier.
-	codeVerifier := base64URLEncode(fmt.Sprint(rand.Int31()))
+	b := make([]byte, 10)
+	_, err := rand.Read(b)
+	if err != nil {
+		return PKCEResponse{}, err
+	}
+	// The slice should now contain random bytes instead of only zeroes.
+	codeVerifier := base64URLEncode(string(b))
 
 	//    2. Using the codeVerifier, generate a sha256 hashed codeChallenge that
 	//       will be sent in the authorization request.
@@ -65,7 +73,7 @@ func RunPKCE(audience string) (PKCEResponse, error) {
 
 	// Open the authorization url in the user's browser, which will eventually
 	// redirect the user to the local webserver we'll create next.
-	err := open.Run(authorizationURL)
+	err = open.Run(authorizationURL)
 	if err != nil {
 		return PKCEResponse{}, err
 	}
