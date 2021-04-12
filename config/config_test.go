@@ -31,7 +31,10 @@ func tempConfig(fs afero.Fs, configYAML string) (string, error) {
 		if err != nil {
 			return dir, err
 		}
-		file.WriteString(configYAML)
+		_, err = file.WriteString(configYAML)
+		if err != nil {
+			return dir, err
+		}
 		file.Close()
 	}
 
