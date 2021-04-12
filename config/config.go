@@ -273,7 +273,7 @@ func (c *configStruct) selectEndpoint(endpointAliasOrURL string) error {
 	}
 
 	c.endpointsMutex.Lock()
-	c.endpointsMutex.Unlock()
+	defer c.endpointsMutex.Unlock()
 
 	if !argumentIsAlias {
 		ep = normalizeEndpoint(endpointAliasOrURL)
