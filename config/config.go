@@ -241,12 +241,14 @@ func (c *configStruct) StoreEndpointAuth(endpointURL, alias, provider, email, sc
 	}
 
 	err := c.setEndpoint(endpointURL, alias, provider, email, scheme, token, refreshToken)
-
 	if err != nil {
 		return microerror.Mask(err)
 	}
 
-	WriteToFile()
+	err = WriteToFile()
+	if err != nil {
+		return microerror.Mask(err)
+	}
 
 	return nil
 }
@@ -303,7 +305,10 @@ func (c *configStruct) SelectEndpoint(endpointAliasOrURL string) error {
 		return microerror.Mask(err)
 	}
 
-	WriteToFile()
+	err = WriteToFile()
+	if err != nil {
+		return microerror.Mask(err)
+	}
 
 	return nil
 }
@@ -332,7 +337,7 @@ func (c *configStruct) ChooseEndpoint(overridingEndpointAliasOrURL string) strin
 			// fields should be filled by calls to
 			// ChooseToken, ChooseScheme, SetProvider...
 			if _, ok := c.endpoints[ep]; !ok {
-				c.setEndpoint(
+				_ = c.setEndpoint(
 					ep, // endpointURL
 					"", // alias
 					"", // provider
@@ -343,7 +348,7 @@ func (c *configStruct) ChooseEndpoint(overridingEndpointAliasOrURL string) strin
 				)
 			}
 		}
-		c.selectEndpoint(ep)
+		_ = c.selectEndpoint(ep)
 	}
 
 	// finally return the SelectedEndpoint (it has been set in the lines above)
@@ -392,7 +397,10 @@ func (c *configStruct) DeleteEndpoint(endpointAliasOrURL string) error {
 		c.SelectedEndpoint = ""
 	}
 
-	WriteToFile()
+	err := WriteToFile()
+	if err != nil {
+		return microerror.Mask(err)
+	}
 
 	return nil
 }
