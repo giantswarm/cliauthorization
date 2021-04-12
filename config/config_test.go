@@ -163,11 +163,11 @@ updated: 2017-09-29T11:23:15+02:00
 endpoints:
   https://myapi.domain.tld:
     email: email@example.com
-    token: some-token
+    token: my-token
     provider: testprovider
 selected_endpoint: https://myapi.domain.tld`
 	email := "email@example.com"
-	token := "some-token"
+	token := "my-token"
 
 	fs := afero.NewMemMapFs()
 	dir, err := tempConfig(fs, yamlText)
@@ -187,7 +187,7 @@ selected_endpoint: https://myapi.domain.tld`
 	if Config.Email != email {
 		t.Errorf("Expected email '%s', got '%s'", email, Config.Email)
 	}
-	if Config.Token != "some-token" {
+	if Config.Token != "my-token" {
 		t.Errorf("Expected token '%s', got '%s'", token, Config.Token)
 	}
 	if Config.Provider != "testprovider" {
