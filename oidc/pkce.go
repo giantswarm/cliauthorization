@@ -31,6 +31,7 @@ const (
 	tokenURL             = "https://giantswarm.eu.auth0.com/oauth/token"
 	redirectURL          = "http://localhost:8085/oauth/callback"
 	authorizationURLBase = "https://giantswarm.eu.auth0.com/authorize"
+	unknownError         = "unknown error"
 )
 
 // PKCEResponse represents the result we get from the PKCE flow.
@@ -64,7 +65,10 @@ func RunPKCE(audience string) (PKCEResponse, error) {
 
 	// Open the authorization url in the user's browser, which will eventually
 	// redirect the user to the local webserver we'll create next.
-	open.Run(authorizationURL)
+	err := open.Run(authorizationURL)
+	if err != nil {
+		return PKCEResponse{}, err
+	}
 
 	fmt.Println(color.YellowString("\nYour browser should now be opening:"))
 	fmt.Println(authorizationURL + "\n")
@@ -153,7 +157,7 @@ func getToken(code, codeVerifier string) (pkceResponse PKCEResponse, err error) 
 
 	req, err := http.NewRequest("POST", tokenURL, payload)
 	if err != nil {
-		pkceResponse.Error = "unknown error"
+		pkceResponse.Error = unknownError
 		pkceResponse.ErrorDescription = "Unable to construct POST request for Auth0."
 		return pkceResponse, microerror.Maskf(authorizationError, pkceResponse.Error)
 	}
@@ -162,7 +166,7 @@ func getToken(code, codeVerifier string) (pkceResponse PKCEResponse, err error) 
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		pkceResponse.Error = "unknown error"
+		pkceResponse.Error = unknownError
 		pkceResponse.ErrorDescription = "Unable to perform POST request to Auth0."
 		return pkceResponse, microerror.Maskf(authorizationError, pkceResponse.Error)
 	}
@@ -170,14 +174,14 @@ func getToken(code, codeVerifier string) (pkceResponse PKCEResponse, err error) 
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		pkceResponse.Error = "unknown error"
+		pkceResponse.Error = unknownError
 		pkceResponse.ErrorDescription = "Got an unparseable error from Auth0. Possibly the Auth0 service is down. Try again later."
 		return pkceResponse, microerror.Maskf(authorizationError, pkceResponse.Error)
 	}
 
 	err = json.Unmarshal(body, &pkceResponse)
 	if err != nil {
-		pkceResponse.Error = "unknown error"
+		pkceResponse.Error = unknownError
 		pkceResponse.ErrorDescription = "Unable to parse response. Possibly Auth0 service is having trouble. Try again later."
 		return pkceResponse, microerror.Maskf(authorizationError, pkceResponse.ErrorDescription)
 	}
@@ -189,7 +193,7 @@ func getToken(code, codeVerifier string) (pkceResponse PKCEResponse, err error) 
 	}
 
 	if res.StatusCode != 200 {
-		pkceResponse.Error = "unknown error"
+		pkceResponse.Error = unknownError
 		pkceResponse.ErrorDescription = "Got an unparseable error from Auth0. Possibly the Auth0 service is down. Try again later."
 		return pkceResponse, microerror.Maskf(authorizationError, pkceResponse.Error)
 	}
