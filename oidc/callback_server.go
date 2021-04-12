@@ -45,7 +45,10 @@ func startCallbackServer(port string, redirectURI string, callback func(w http.R
 	r := <-resultCh
 
 	// Shutdown the server.
-	s.Shutdown(context.Background())
+	err := s.Shutdown(context.Background())
+	if err != nil {
+		return nil, err
+	}
 
 	// Return the result.
 	return r.Interface, r.Error
