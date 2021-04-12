@@ -36,7 +36,7 @@ func ParseIDToken(tokenString string) (token *IDToken, err error) {
 	// head of the token to identify which key to use, but the parsed token (head and claims) is provided
 	// to the callback, providing flexibility.
 	t, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		cert, err := getPemCert(token, jwksURL)
+		cert, err := getPemCert(token)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
@@ -149,7 +149,7 @@ type JSONWebKeys struct {
 // to the private key that was used to sign a given jwt token.
 // `kid` is a jwt header claim which holds a key identifier, it lets us find the key
 // that was used to sign the token in the jwks response.
-func getPemCert(token *jwt.Token, jwksURL string) (string, error) {
+func getPemCert(token *jwt.Token) (string, error) {
 	var cert = ""
 	var jwks = Jwks{}
 
