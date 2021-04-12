@@ -1,11 +1,12 @@
 package oidc
 
 import (
-	"bytes"
 	"crypto/sha256"
+	"embed"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
@@ -15,12 +16,13 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/giantswarm/microerror"
-	"github.com/gobuffalo/packr"
 	"github.com/skratchdot/open-golang/open"
 )
 
 var (
-	templates = packr.NewBox("html")
+	//go:embed html/sso_complete.html
+	//go:embed html/sso_failed.html
+	html embed.FS
 )
 
 const (
@@ -90,11 +92,15 @@ func RunPKCE(audience string) (PKCEResponse, error) {
 		// along with the codeVerifier we made at the start.
 		pkceResponse, err := getToken(code, codeVerifier)
 		if err != nil {
-			http.ServeContent(w, r, "", time.Time{}, bytes.NewReader(templates.Bytes("sso_failed.html")))
+			file, _ := html.Open("html/sso_failed.html")
+			defer file.Close()
+			http.ServeContent(w, r, "", time.Time{}, file.(io.ReadSeeker))
 			return pkceResponse, err
 		}
 
-		http.ServeContent(w, r, "", time.Time{}, bytes.NewReader(templates.Bytes("sso_complete.html")))
+		file, _ := html.Open("html/sso_complete.html")
+		defer file.Close()
+		http.ServeContent(w, r, "", time.Time{}, file.(io.ReadSeeker))
 		return pkceResponse, nil
 	})
 	if err != nil {
