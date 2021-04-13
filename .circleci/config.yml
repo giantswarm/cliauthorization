@@ -6,16 +6,8 @@ workflows:
   my-workflow:
     jobs:
       - architect/go-test:
-          name: go-test-gscliauth
+          name: go-test
           # Needed to trigger job also on git tag.
-          filters:
-            # Trigger job also on git tag.
-            tags:
-              only: /^v.*/
-
-      - architect/go-build:
-          name: go-build-gscliauth
-          binary: gscliauth
           filters:
             # Trigger job also on git tag.
             tags:
