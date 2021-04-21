@@ -609,8 +609,8 @@ func (c *configStruct) AuthHeaderGetter(endpoint string, overridingToken string)
 
 // isTokenValid takes a JWT access token and returns true/false depending on
 // whether or not the access token is valid. Does not check if the signature is valid.
-// Only checkes time based claims.
-func isTokenValid(token string) (expired bool) {
+// Only checks time based claims.
+func isTokenValid(token string) bool {
 	// Parse token
 	claims := jwt.MapClaims{}
 
@@ -620,11 +620,8 @@ func isTokenValid(token string) (expired bool) {
 	}
 
 	err = parsedToken.Claims.Valid(nil)
-	if err != nil {
-		return false
-	}
 
-	return true
+	return err == nil
 }
 
 // init sets defaults and initializes config paths.
