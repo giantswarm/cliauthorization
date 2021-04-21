@@ -12,7 +12,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/dgrijalva/jwt-go/v4"
 	"github.com/giantswarm/microerror"
 	"github.com/spf13/afero"
 	"gopkg.in/yaml.v2"
@@ -619,7 +619,7 @@ func isTokenValid(token string) (expired bool) {
 		return false
 	}
 
-	err = parsedToken.Claims.Valid()
+	err = parsedToken.Claims.Valid(nil)
 	if err != nil {
 		return false
 	}

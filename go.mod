@@ -4,7 +4,7 @@ go 1.14
 
 require (
 	github.com/cenkalti/backoff v2.2.1+incompatible
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/dgrijalva/jwt-go/v4 v4.0.0-preview1
 	github.com/fatih/color v1.9.0
 	github.com/giantswarm/microerror v0.2.0
 	github.com/gobuffalo/packr v1.30.1

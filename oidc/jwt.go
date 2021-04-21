@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/cenkalti/backoff"
-	"github.com/dgrijalva/jwt-go"
+	"github.com/dgrijalva/jwt-go/v4"
 	"github.com/giantswarm/microerror"
 )
 
@@ -46,31 +46,6 @@ func ParseIDToken(tokenString string) (token *IDToken, err error) {
 		return result, nil
 	})
 	if err != nil {
-		// handle some validation errors specifically.
-		valErr, valErrOK := err.(*jwt.ValidationError)
-		if valErrOK && valErr.Errors == jwt.ValidationErrorIssuedAt {
-			claims, ok := t.Claims.(jwt.MapClaims)
-			if !ok {
-				return nil, microerror.Maskf(tokenIssuedAtError, valErr.Error())
-			}
-
-			iatClaim, ok := claims["iat"]
-			if !ok {
-				return nil, microerror.Maskf(tokenIssuedAtError, valErr.Error())
-			}
-
-			iatFloat, ok := iatClaim.(float64)
-			if !ok {
-				return nil, microerror.Maskf(tokenIssuedAtError, valErr.Error())
-			}
-
-			iat := int64(iatFloat)
-			fmt.Printf("Issued at:  %d\n", iat)
-			fmt.Printf("Now:        %d\n", time.Now().Unix())
-			fmt.Printf("Difference: %d seconds\n\n", iat-time.Now().Unix())
-			return nil, microerror.Maskf(tokenIssuedAtError, valErr.Error())
-		}
-
 		return nil, microerror.Maskf(tokenInvalidError, err.Error())
 	}
 
@@ -85,6 +60,25 @@ func ParseIDToken(tokenString string) (token *IDToken, err error) {
 
 	if claims == nil {
 		return nil, microerror.Mask(tokenInvalidError)
+	}
+
+	// check issued at ("iat") claim
+	if iatClaim, iatClaimOK := claims["iat"]; iatClaimOK {
+		iatFloat, ok := iatClaim.(float64)
+		if !ok {
+			return nil, microerror.Maskf(tokenIssuedAtError, "convert iat to float64 failed")
+		}
+		iatInt := int64(iatFloat)
+
+		issuedAt := time.Unix(iatInt, 0)
+		if issuedAt.After(time.Now()) {
+			fmt.Printf("Issued at:  %d\n", iatInt)
+			fmt.Printf("Now:        %d\n", time.Now().Unix())
+			fmt.Printf("Difference: %d seconds\n\n", iatInt-time.Now().Unix())
+			return nil, microerror.Maskf(tokenIssuedAtError, "iat is in the future")
+		}
+	} else {
+		return nil, microerror.Maskf(tokenIssuedAtError, "missing iat claim")
 	}
 
 	resultToken := &IDToken{}
