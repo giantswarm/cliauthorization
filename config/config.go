@@ -12,7 +12,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/form3tech-oss/jwt-go"
 	"github.com/giantswarm/microerror"
 	"github.com/spf13/afero"
 	"gopkg.in/yaml.v2"
