@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Use fork of `jwt-go` library to fix CVE related to audience handling.
+
 ## [0.2.3] - 2020-09-04
 
 - Add InitializeWithLogger function to enable custom logging target
