@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/cenkalti/backoff"
-	"github.com/form3tech-oss/jwt-go"
 	"github.com/giantswarm/microerror"
+	"github.com/golang-jwt/jwt"
 )
 
 const (
