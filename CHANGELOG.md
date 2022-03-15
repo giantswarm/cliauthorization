@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Updated CircleCI Ubuntu image to 20.04.
+
 ## [0.2.5] - 2021-10-11
 
 - Replace `github.com/form3tech-oss/jwt-go` with `github.com/golang-jwt/jwt`
