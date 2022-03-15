@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: cimg/ubuntu-2004:202111-02
+      - image: cimg/base:2022.03-20.04
     steps:
     - checkout
 
