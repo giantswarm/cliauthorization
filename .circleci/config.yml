@@ -12,13 +12,3 @@ workflows:
             # Trigger job also on git tag.
             tags:
               only: /^v.*/
-
-      - architect/go-build:
-          name: go-build
-          requires:
-            - go-test
-          binary: gscliauth
-          filters:
-            # Trigger job also on git tag.
-            tags:
-              only: /^v.*/
