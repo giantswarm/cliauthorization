@@ -15,6 +15,7 @@ workflows:
 
       - architect/go-build:
           name: go-build
+          binary: gscliauth
           filters:
             # Trigger job also on git tag.
             tags:
