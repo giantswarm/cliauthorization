@@ -10,5 +10,5 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.4.1
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
 	github.com/spf13/afero v1.8.2
-	gopkg.in/yaml.v2 v2.2.8
+	gopkg.in/yaml.v2 v2.4.0
 )
