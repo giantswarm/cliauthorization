@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/giantswarm/microerror"
-	"github.com/golang-jwt/jwt"
+	jwt "github.com/golang-jwt/jwt/v4"
 	"github.com/spf13/afero"
 	"gopkg.in/yaml.v2"
 

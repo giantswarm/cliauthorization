@@ -8,7 +8,7 @@ import (
 
 	"github.com/cenkalti/backoff"
 	"github.com/giantswarm/microerror"
-	"github.com/golang-jwt/jwt"
+	jwt "github.com/golang-jwt/jwt/v4"
 )
 
 const (
