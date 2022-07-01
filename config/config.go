@@ -449,6 +449,33 @@ func (c *configStruct) ChooseScheme(endpoint string, CmdToken string) string {
 	return "giantswarm"
 }
 
+// ChooseSchemeBearer chooses a scheme to use, according to a rule set.
+// - If the user is providing their own token via the --auth-token flag,
+//   then always return "Bearer".
+// - If we have an auth scheme for the given endpoint, we return that.
+// - otherwise we return "Bearer"
+func (c *configStruct) ChooseSchemeBearer(endpoint string, CmdToken string) string {
+	ep := normalizeEndpoint(endpoint)
+
+	if CmdToken != "" {
+		if _, ok := c.endpoints[ep]; ok {
+			c.endpointsMutex.Lock()
+			defer c.endpointsMutex.Unlock()
+
+			c.endpoints[ep].Scheme = "Bearer"
+		}
+
+		return "Bearer"
+	}
+
+	endpointConfig := c.EndpointConfig(ep)
+	if endpointConfig != nil && endpointConfig.Scheme != "" {
+		return endpointConfig.Scheme
+	}
+
+	return "Bearer"
+}
+
 // HasEndpointAlias returns whether the given alias is used for an endpoint.
 func (c *configStruct) HasEndpointAlias(alias string) bool {
 	c.endpointsMutex.RLock()

@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add `ChooseSchemeBearer` function that returns "Bearer" as default scheme.
+
 ### Changed
 
 - Updated CircleCI Ubuntu image to 20.04.
