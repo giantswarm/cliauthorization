@@ -15,7 +15,7 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/giantswarm/microerror"
-	"github.com/gobuffalo/packr"
+	"github.com/gobuffalo/packr/v2"
 	"github.com/skratchdot/open-golang/open"
 )
 
