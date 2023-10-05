@@ -15,7 +15,7 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/golang-jwt/jwt"
 	"github.com/spf13/afero"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 
 	"github.com/giantswarm/gscliauth/oidc"
 )
@@ -396,10 +396,10 @@ func (c *configStruct) DeleteEndpoint(endpointAliasOrURL string) error {
 }
 
 // ChooseToken chooses a token to use, according to a rule set.
-// - If the given token is not empty, we use (return) that
-// - If the given token is empty and we have an auth token for the given
-//   endpoint, we return that
-// - otherwise we return an empty string
+//   - If the given token is not empty, we use (return) that
+//   - If the given token is empty and we have an auth token for the given
+//     endpoint, we return that
+//   - otherwise we return an empty string
 func (c *configStruct) ChooseToken(endpoint, overridingToken string) string {
 	ep := normalizeEndpoint(endpoint)
 
@@ -423,10 +423,10 @@ func (c *configStruct) ChooseToken(endpoint, overridingToken string) string {
 }
 
 // ChooseScheme chooses a scheme to use, according to a rule set.
-// - If the user is providing their own token via the --auth-token flag,
-//   then always return "giantswarm".
-// - If we have an auth scheme for the given endpoint, we return that.
-// - otherwise we return "giantswarm"
+//   - If the user is providing their own token via the --auth-token flag,
+//     then always return "giantswarm".
+//   - If we have an auth scheme for the given endpoint, we return that.
+//   - otherwise we return "giantswarm"
 func (c *configStruct) ChooseScheme(endpoint string, CmdToken string) string {
 	ep := normalizeEndpoint(endpoint)
 
