@@ -1,19 +1,15 @@
-version: 2
-jobs:
-  build:
-    machine:
-      image: ubuntu-2004:202010-01
-    steps:
-    - checkout
-    - run: |
-        wget -q $(curl -sS https://api.github.com/repos/giantswarm/architect/releases/tags/v1.0.0 | grep browser_download_url | head -n 1 | cut -d '"' -f 4)
-        chmod +x ./architect
-        ./architect version
-    - run: ./architect build
-    - store_test_results:
-        path: /tmp/results
-    - deploy:
-        command: |
-          if [ "${CIRCLE_BRANCH}" == "master" ]; then
-            ./architect deploy
-          fi
+version: 2.1
+
+orbs:
+  architect: giantswarm/architect@4.34.0
+
+workflows:
+  test:
+    jobs:
+      - architect/go-test:
+          name: go-test
+          context: architect
+          filters:
+            # Trigger job also on git tag.
+            tags:
+              only: /^v.*/
